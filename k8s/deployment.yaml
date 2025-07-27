@@ -14,9 +14,25 @@ spec:
     spec:
       containers:
       - name: flask-cicd-demo
-        image: maayanamos/flask-cicd-demo:latest
+        image: maayanamos/flask-cicd-demo:latest # The Docker image built and pushed via GitHub Actions
         ports:
         - containerPort: 5000
+        # Liveness_probe- Checks if the container is still running properly
+        # If this probe fails, Kubernetes will restart the container
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10  # Wait 10 seconds before first check
+          periodSeconds: 10        # Check every 10 seconds
+        # Readiness_probe- Checks if the app is ready to accept traffic
+        # If this probe fails, the pod will not receive requests from the service  
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 5  # Wait 5 seconds before first check
+          periodSeconds: 5        # Check every 5 seconds
 ---
 apiVersion: v1
 kind: Service
